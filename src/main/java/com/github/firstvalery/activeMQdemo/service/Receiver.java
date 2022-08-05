@@ -1,22 +1,22 @@
 package com.github.firstvalery.activeMQdemo.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jms.annotation.JmsListener;
-
-import java.util.concurrent.CountDownLatch;
+import org.springframework.messaging.Message;
 
 @Slf4j
 public class Receiver {
+    private final Handler handler;
 
-    private final CountDownLatch latch = new CountDownLatch(1);
-
-    public CountDownLatch getLatch() {
-        return latch;
+    public Receiver(Handler handler) {
+        this.handler = handler;
     }
 
-    @JmsListener(destination = "helloworld.q")
-    public void receive(String message) {
+
+    @JmsListener(destination = "${activemq.destination-name}")
+    public void receive(Message<?> message) {
         log.info("received message='{}'", message);
-        latch.countDown();
+        handler.handle(message);
     }
 }

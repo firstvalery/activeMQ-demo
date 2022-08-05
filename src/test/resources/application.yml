@@ -1,2 +1,8 @@
 activemq:
-  broker-url: vm://embedded-broker?broker.persistent=false
+  #broker-url: vm://embedded-broker?broker.persistent=false
+  destination-name: application.q
+  broker-url:
+
+spring:
+  profiles:
+    active: test

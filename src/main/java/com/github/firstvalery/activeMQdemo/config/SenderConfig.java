@@ -2,7 +2,6 @@ package com.github.firstvalery.activeMQdemo.config;
 
 import com.github.firstvalery.activeMQdemo.service.Sender;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.connection.CachingConnectionFactory;
@@ -10,32 +9,26 @@ import org.springframework.jms.core.JmsTemplate;
 
 @Configuration
 public class SenderConfig {
-
-    @Value("${activemq.broker-url}")
-    private String brokerUrl;
-
     @Bean
-    public ActiveMQConnectionFactory senderActiveMQConnectionFactory() {
-        ActiveMQConnectionFactory activeMQConnectionFactory =
-                new ActiveMQConnectionFactory();
-        activeMQConnectionFactory.setBrokerURL(brokerUrl);
+    public ActiveMQConnectionFactory senderActiveMQConnectionFactory(ApplicationConfiguration applicationConfiguration) {
+        ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
+        activeMQConnectionFactory.setBrokerURL(applicationConfiguration.getBrokerUrl());
 
         return activeMQConnectionFactory;
     }
 
     @Bean
-    public CachingConnectionFactory cachingConnectionFactory() {
-        return new CachingConnectionFactory(
-                senderActiveMQConnectionFactory());
+    public CachingConnectionFactory cachingConnectionFactory(ApplicationConfiguration applicationConfiguration) {
+        return new CachingConnectionFactory(senderActiveMQConnectionFactory(applicationConfiguration));
     }
 
     @Bean
-    public JmsTemplate jmsTemplate() {
-        return new JmsTemplate(cachingConnectionFactory());
+    public JmsTemplate jmsTemplate(ApplicationConfiguration applicationConfiguration) {
+        return new JmsTemplate(cachingConnectionFactory(applicationConfiguration));
     }
 
     @Bean
-    public Sender sender(JmsTemplate jmsTemplate) {
-        return new Sender(jmsTemplate);
+    public Sender sender(JmsTemplate jmsTemplate, ApplicationConfiguration applicationConfiguration) {
+        return new Sender(jmsTemplate, applicationConfiguration);
     }
 }
